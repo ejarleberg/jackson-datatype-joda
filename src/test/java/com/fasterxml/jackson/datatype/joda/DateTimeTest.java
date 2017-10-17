@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
@@ -140,6 +141,13 @@ public class DateTimeTest extends JodaTestBase
         m.addMixIn(DateTime.class, TypeInfoMixIn.class);
         assertEquals("[\"org.joda.time.DateTime\",\"1970-01-01T00:00:00.000Z\"]",
                 m.writeValueAsString(dt));
+    }
+
+    public void testSerializationWithWriteNumbersAsStrings() throws IOException {
+        ObjectMapper m = jodaMapper();
+        m.configure(JsonGenerator.Feature.WRITE_NUMBERS_AS_STRINGS, true);
+
+        assertEquals("\"0\"", m.writeValueAsString(DATE_JAN_1_1970_UTC));
     }
 
     public void testIso8601ThroughJoda() throws Exception {

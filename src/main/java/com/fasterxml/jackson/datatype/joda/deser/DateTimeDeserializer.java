@@ -55,6 +55,11 @@ public class DateTimeDeserializer
             if (str.length() == 0) {
                 return null;
             }
+            try {
+                // If WRITE_NUMBERS_AS_STRINGS is set during serialization, then millis will be a string
+                DateTimeZone tz = _format.isTimezoneExplicit() ? _format.getTimeZone() : DateTimeZone.forTimeZone(ctxt.getTimeZone());
+                return new DateTime(Long.valueOf(str), tz);
+            } catch (NumberFormatException e) { }
             // 08-Jul-2015, tatu: as per [datatype-joda#44], optional TimeZone inclusion
             // NOTE: on/off feature only for serialization; on deser should accept both
             int ix = str.indexOf('[');

@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import org.joda.time.*;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -136,6 +137,16 @@ public class DateTimeDeserTest extends JodaTestBase
                 ReadableDateTimeWithoutContextTZOverride.class);
         DateTime expected = new DateTime(2016, 6, 20, 8, 59, DateTimeZone.forOffsetHours(3));
         assertEquals(expected, date.time);
+    }
+
+    public void testDeserializationWithWriteNumbersAsStrings() throws IOException {
+        ObjectMapper m = jodaMapper();
+        m.configure(JsonGenerator.Feature.WRITE_NUMBERS_AS_STRINGS, true);
+
+        Long timeMillis = 1508236718157L;
+        final DateTime dateTime = m.readValue("\"" + timeMillis + "\"", DateTime.class);
+        DateTime expected = new DateTime(timeMillis, DateTimeZone.UTC);
+        assertEquals(expected, dateTime);
     }
 
     public void test_enable_ADJUST_DATES_TO_CONTEXT_TIME_ZONE() throws Exception
